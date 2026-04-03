@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORaI — AI-Powered Operations Research Consulting</title>
+  <meta name="description" content="We design optimization algorithms for complex combinatorial problems across energy, logistics, manufacturing, aviation, finance, and more — using AI-driven automated algorithm design." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='6' r='3' fill='%232563EB'/%3E%3Ccircle cx='6' cy='22' r='3' fill='%232563EB'/%3E%3Ccircle cx='26' cy='22' r='3' fill='%232563EB'/%3E%3Cline x1='16' y1='9' x2='6' y2='19' stroke='%232563EB' stroke-width='1.5' opacity='0.7'/%3E%3Cline x1='16' y1='9' x2='26' y2='19' stroke='%232563EB' stroke-width='1.5' opacity='0.7'/%3E%3Cline x1='9' y1='22' x2='23' y2='22' stroke='%232563EB' stroke-width='1.5' opacity='0.7'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0A1628;
+      --navy-light: #0f1f3d;
+      --white: #FFFFFF;
+      --blue: #2563EB;
+      --blue-dark: #1d4ed8;
+      --blue-light: #3b82f6;
+      --gray-bg: #F8FAFC;
+      --gray-light: #e2e8f0;
+      --gray-mid: #94a3b8;
+      --gray-text: #64748b;
+      --text: #0f172a;
+      --text-light: #334155;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────────────────── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 2rem;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 1px 32px rgba(0,0,0,0.18);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--white);
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .nav-logo svg { width: 26px; height: 26px; }
+
+    .nav-links {
+      display: flex;
+      gap: 1.1rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-cta:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(10, 22, 40, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.5rem 2rem 2rem;
+      z-index: 999;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--white); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu .mobile-cta {
+      display: block;
+      margin-top: 1rem;
+      text-align: center;
+      background: var(--blue);
+      color: var(--white);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    /* ─── SECTION UTILITIES ────────────────────────────── */
+    section { padding: 100px 0; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+    .section-label {
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 1rem;
+    }
+    .section-heading {
+      font-size: clamp(2.1rem, 4vw, 3.1rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1.2rem;
+      color: var(--gray-text);
+      line-height: 1.8;
+      max-width: 720px;
+    }
+
+    /* fade-in on scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      background: linear-gradient(150deg, #0d2159 0%, #1a3fa8 45%, #2563eb 75%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 0;
+    }
+    #hero canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.18;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+      padding: 6rem 2rem 4rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.3);
+      color: #93c5fd;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 1.75rem;
+    }
+    .hero-badge::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: #60a5fa;
+      border-radius: 50%;
+    }
+    .hero-heading {
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-heading span { color: #60a5fa; }
+    .hero-sub {
+      font-size: clamp(1.15rem, 2vw, 1.35rem);
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(37,99,235,0.45);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-2px);
+    }
+    .hero-trust {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #64748b;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .trust-item span:first-child { font-size: 1.1rem; }
+
+    /* ─── PROBLEM ─────────────────────────────────────────── */
+    #problem { background: var(--white); }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    }
+    .card-icon {
+      width: 48px; height: 48px;
+      background: rgba(37,99,235,0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .card-icon svg { width: 22px; height: 22px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+    .card p { font-size: 1.05rem; color: var(--gray-text); line-height: 1.75; }
+
+    /* ─── SOLUTION ────────────────────────────────────────── */
+    #solution { background: var(--gray-bg); }
+    .steps-flow {
+      display: grid;
+      grid-template-columns: 1fr 32px 1fr 32px 1fr;
+      align-items: start;
+      gap: 0;
+      margin-top: 3rem;
+    }
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 2.5rem;
+    }
+    .step-arrow svg { width: 24px; height: 24px; stroke: var(--blue-light); fill: none; stroke-width: 2; opacity: 0.5; }
+    .step-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .step-number {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--blue);
+      margin-bottom: 0.75rem;
+    }
+    .step-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .step-card p { font-size: 1.05rem; color: var(--gray-text); line-height: 1.75; }
+
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 3.5rem;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--gray-light);
+    }
+    .stat-item {
+      background: var(--white);
+      padding: 2rem;
+      text-align: center;
+    }
+    .stat-item:not(:last-child) { border-right: 1px solid var(--gray-light); }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: -0.04em;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .stat-label { font-size: 1rem; color: var(--gray-text); font-weight: 500; }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────── */
+    #how-it-works { background: var(--gray-bg); }
+
+    .hiw-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+      margin-top: 3.5rem;
+    }
+
+    /* Timeline steps */
+    .hiw-steps { display: flex; flex-direction: column; gap: 0; }
+
+    .hiw-step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 1.25rem;
+      position: relative;
+    }
+    .hiw-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 25px;
+      top: 52px;
+      bottom: -8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--blue), rgba(37,99,235,0.1));
+    }
+    .hiw-step + .hiw-step { margin-top: 2rem; }
+
+    .hiw-step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 2px;
+    }
+    .hiw-step-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+      letter-spacing: -0.02em;
+      z-index: 1;
+    }
+
+    .hiw-step-body { padding-bottom: 0.5rem; }
+    .hiw-step-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .hiw-step-desc {
+      font-size: 1rem;
+      color: var(--gray-text);
+      line-height: 1.7;
+    }
+
+    /* Case study card */
+    .hiw-case-card {
+      background: linear-gradient(145deg, #0f2456 0%, #1a3fa8 55%, #2563eb 100%);
+      border-radius: 20px;
+      padding: 2.25rem;
+      color: var(--white);
+      position: sticky;
+      top: 96px;
+      box-shadow: 0 12px 48px rgba(37,99,235,0.3);
+    }
+    .hiw-case-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 1.25rem;
+    }
+    .hiw-case-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #60a5fa;
+    }
+    .hiw-case-quote {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.82);
+      border-left: 3px solid rgba(96,165,250,0.5);
+      padding-left: 1rem;
+      margin-bottom: 1.75rem;
+      font-style: italic;
+    }
+    .hiw-case-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+      margin-bottom: 1.5rem;
+    }
+    .hiw-case-result-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 1rem;
+    }
+    .hiw-case-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .hiw-metric {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .hiw-metric-value {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .hiw-metric-label {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.4;
+    }
+    .hiw-metric.full { grid-column: 1 / -1; }
+    .hiw-case-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 99px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+    }
+    .hiw-case-tag::before {
+      content: '✦';
+      font-size: 0.6rem;
+      color: #60a5fa;
+    }
+
+    .hiw-cta {
+      margin-top: 3.5rem;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hiw-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .hiw-case-card { position: static; }
+    }
+
+    /* ─── INDUSTRIES ─────────────────────────────────────── */
+    #industries { background: var(--white); padding: 100px 0; }
+
+    .industries-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .industry-card {
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 3/2.6;
+      cursor: default;
+      transition: transform 0.28s cubic-bezier(.25,1,.5,1), box-shadow 0.28s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 1.2rem;
+    }
+    .industry-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.22);
+      z-index: 2;
+    }
+
+    /* Vivid gradient backgrounds */
+    .ind-energy    { background: linear-gradient(145deg, #f59e0b 0%, #ea580c 100%); }
+    .ind-aerospace { background: linear-gradient(145deg, #7c3aed 0%, #4338ca 100%); }
+    .ind-aviation  { background: linear-gradient(145deg, #0ea5e9 0%, #2563eb 100%); }
+    .ind-transport { background: linear-gradient(145deg, #06b6d4 0%, #0369a1 100%); }
+    .ind-industry  { background: linear-gradient(145deg, #f97316 0%, #b91c1c 100%); }
+    .ind-retail    { background: linear-gradient(145deg, #ec4899 0%, #be185d 100%); }
+    .ind-ecommerce { background: linear-gradient(145deg, #a855f7 0%, #7c3aed 100%); }
+    .ind-logistics { background: linear-gradient(145deg, #10b981 0%, #047857 100%); }
+    .ind-finance   { background: linear-gradient(145deg, #16a34a 0%, #14532d 100%); }
+    .ind-academia  { background: linear-gradient(145deg, #6366f1 0%, #312e81 100%); }
+
+    /* decorative circle in corner */
+    .industry-card::before {
+      content: '';
+      position: absolute;
+      top: -28px; right: -28px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      pointer-events: none;
+    }
+    .industry-card::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: -20px;
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+
+    .industry-icon-wrap {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: auto;
+      flex-shrink: 0;
+      backdrop-filter: blur(4px);
+    }
+    .industry-icon-wrap svg {
+      width: 22px; height: 22px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .industry-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.35rem;
+      margin-top: 0.6rem;
+      line-height: 1.2;
+    }
+    .industry-divider {
+      width: 28px; height: 2px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 2px;
+      margin-bottom: 0.4rem;
+    }
+    .industry-desc {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1100px) {
+      .industries-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 860px) {
+      .industries-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .industries-grid { grid-template-columns: repeat(2, 1fr); }
+      .industry-card { aspect-ratio: unset; min-height: 160px; }
+    }
+
+    /* ─── CASE STUDY ──────────────────────────────────────── */
+    #case-study { background: var(--white); }
+
+    .bench-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .bench-summary-card {
+      background: var(--gray-bg);
+      border: 1.5px solid var(--gray-light);
+      border-radius: 12px;
+      padding: 1.4rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bench-summary-card:hover,
+    .bench-summary-card.active {
+      border-color: var(--blue);
+      background: rgba(37,99,235,0.04);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+      transform: translateY(-2px);
+    }
+    .bsc-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+    }
+    .bsc-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .bsc-sub {
+      font-size: 0.95rem;
+      color: var(--gray-text);
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+    .bsc-note { font-size: 0.9rem; color: var(--gray-mid); }
+
+    .perf-figure { margin-top: 3rem; text-align: center; }
+    .perf-figure img {
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--gray-light);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .perf-figure-caption {
+      margin-top: 0.9rem;
+      font-size: 0.95rem;
+      color: var(--gray-mid);
+      font-style: italic;
+      max-width: 780px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .bench-tab-buttons {
+      display: flex;
+      gap: 0.4rem;
+      border-bottom: 2px solid var(--gray-light);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .bench-tab-btn {
+      background: none;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-text);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      border-radius: 6px 6px 0 0;
+      white-space: nowrap;
+    }
+    .bench-tab-btn:hover { color: var(--blue); }
+    .bench-tab-btn.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      background: rgba(37,99,235,0.05);
+    }
+    .bench-tab-panel { display: none; }
+    .bench-tab-panel.active { display: block; }
+
+    .bench-header { margin-bottom: 1.5rem; }
+    .bench-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .bench-desc { font-size: 1rem; color: var(--gray-text); line-height: 1.7; max-width: 820px; }
+
+    .bench-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--gray-light);
+      border-radius: 12px;
+    }
+    .bench-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      min-width: 760px;
+    }
+    .bench-table th {
+      background: var(--gray-bg);
+      padding: 0.65rem 0.75rem;
+      text-align: center;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--gray-light);
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+    .bench-table th:nth-child(1),
+    .bench-table th:nth-child(2),
+    .bench-table td:nth-child(1),
+    .bench-table td:nth-child(2) { text-align: left; padding-left: 0.9rem; }
+    .bench-table .sub-header th {
+      font-weight: 500;
+      font-size: 0.88rem;
+      color: var(--gray-text);
+      background: #f8fafc;
+    }
+    .bench-table td {
+      padding: 0.48rem 0.65rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(226,232,240,0.5);
+      color: var(--text-light);
+    }
+    .bench-table td:nth-child(1) { color: var(--text); font-weight: 600; }
+    .bench-table td.mace { color: var(--blue); font-weight: 700; background: rgba(37,99,235,0.04); }
+    .bench-table tr.avg-row td {
+      background: var(--gray-bg);
+      border-top: 1.5px solid var(--gray-light);
+      color: var(--text);
+    }
+    .bench-table tr.avg-row td.mace { color: var(--blue); background: rgba(37,99,235,0.08); }
+    .bench-table tbody tr:hover td { background: rgba(248,250,252,0.9); }
+    .bench-table tbody tr:hover td.mace { background: rgba(37,99,235,0.07); }
+
+    .case-footnote {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gray-light);
+      font-size: 0.95rem;
+      color: var(--gray-mid);
+      font-style: italic;
+    }
+    .case-footnote a { color: var(--blue); text-decoration: none; }
+    .case-footnote a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .bench-summary { grid-template-columns: repeat(2, 1fr); }
+      .bench-tab-btn { font-size: 0.95rem; padding: 0.55rem 0.85rem; }
+    }
+    @media (max-width: 600px) {
+      .bench-summary { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── SERVICES ────────────────────────────────────────── */
+    #services { background: var(--gray-bg); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .service-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 16px;
+      padding: 2.25rem;
+      position: relative;
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+    }
+    .service-card.featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15), 0 8px 32px rgba(37,99,235,0.12);
+    }
+    .service-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--white);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .service-timeline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: rgba(37,99,235,0.08);
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+      margin-bottom: 1rem;
+      width: fit-content;
+    }
+    .service-timeline svg { width: 12px; height: 12px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; }
+    .service-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+    .service-desc {
+      font-size: 1.05rem;
+      color: var(--gray-text);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-light);
+    }
+    .service-features { list-style: none; margin-bottom: 2rem; flex: 1; }
+    .service-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 1rem;
+      color: var(--text-light);
+      padding: 0.35rem 0;
+    }
+    .service-features li::before {
+      content: '';
+      display: inline-block;
+      width: 16px; height: 16px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%232563EB' opacity='0.12'/%3E%3Cpolyline points='4.5,8 7,10.5 11.5,5.5' fill='none' stroke='%232563EB' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .service-cta {
+      display: block;
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .service-cta.outline {
+      border: 1.5px solid var(--blue);
+      color: var(--blue);
+    }
+    .service-cta.outline:hover {
+      background: var(--blue);
+      color: var(--white);
+    }
+    .service-cta.filled {
+      background: var(--blue);
+      color: var(--white);
+    }
+    .service-cta.filled:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+    }
+    .services-cta-bar {
+      margin-top: 3rem;
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .services-cta-bar-text h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .services-cta-bar-text p {
+      font-size: 1rem;
+      color: var(--gray-text);
+    }
+    @media (max-width: 900px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .services-cta-bar { flex-direction: column; text-align: center; }
+    }
+
+    /* ─── ABOUT ───────────────────────────────────────────── */
+    #about { background: var(--white); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      max-width: 680px;
+      margin-top: 3rem;
+    }
+    .founder-photo {
+      width: 100px; height: 100px;
+      background: var(--gray-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gray-text);
+      border: 3px solid var(--gray-light);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .founder-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .founder-title {
+      font-size: 1rem;
+      color: var(--blue);
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+    .founder-bio {
+      font-size: 1.05rem;
+      color: var(--gray-text);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+    .founder-bio p { margin-bottom: 1rem; }
+    .founder-bio p:last-child { margin-bottom: 0; }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .social-link:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: rgba(37,99,235,0.04);
+    }
+    .social-link svg { width: 15px; height: 15px; }
+
+    .credentials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .cred-box {
+      background: var(--gray-bg);
+      border: 1px solid var(--gray-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .cred-box h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--blue);
+      margin-bottom: 0.9rem;
+    }
+    .cred-box ul { list-style: none; }
+    .cred-box ul li {
+      font-size: 1rem;
+      color: var(--text-light);
+      padding: 0.3rem 0;
+      border-bottom: 1px solid var(--gray-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cred-box ul li:last-child { border-bottom: none; }
+    .cred-box ul li::before {
+      content: '·';
+      color: var(--blue);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ─── CONTACT ─────────────────────────────────────────── */
+    #contact {
+      background: linear-gradient(150deg, #fffbeb 0%, #fef9f0 40%, #eff6ff 100%);
+      padding: 100px 0;
+      text-align: center;
+    }
+    #contact .section-label { color: var(--blue); }
+    #contact .section-heading { color: var(--text); }
+    #contact .section-sub { color: var(--gray-text); margin: 0 auto 3rem; }
+
+    .contact-card {
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .contact-card-icon {
+      width: 64px; height: 64px;
+      background: rgba(37,99,235,0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .contact-card-icon svg {
+      width: 28px; height: 28px;
+      stroke: var(--blue);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .contact-card-email {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .contact-card-hint {
+      font-size: 1rem;
+      color: var(--gray-text);
+      line-height: 1.7;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .contact-card-cta {
+      display: inline-block;
+      margin-top: 0.25rem;
+    }
+
+    .contact-card-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: 0.92rem;
+      color: var(--gray-mid);
+      font-weight: 500;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--gray-light);
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .contact-card { padding: 2rem 1.5rem; }
+      .contact-card-email { font-size: 1.1rem; }
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      background: #060e1a;
+      padding: 1.5rem 2rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-copy { font-size: 0.95rem; color: #475569; }
+    .footer-center { font-size: 0.95rem; color: #475569; }
+    .footer-socials { display: flex; gap: 1rem; }
+    .footer-social {
+      color: #475569;
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+    .footer-social:hover { color: var(--blue-light); }
+    .footer-social svg { width: 18px; height: 18px; display: block; }
+
+    /* ─── BACK TO TOP ─────────────────────────────────────── */
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 44px; height: 44px;
+      background: var(--blue);
+      border: none;
+      border-radius: 10px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.3s, transform 0.3s, background 0.2s;
+      z-index: 900;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: none; }
+    #back-to-top:hover { background: var(--blue-dark); }
+    #back-to-top svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── LANG TOGGLE ─────────────────────────────────────── */
+    #lang-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.85);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+    #lang-toggle:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.45);
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+
+      .cards-grid,
+      .services-grid { grid-template-columns: 1fr; }
+
+      .steps-flow {
+        grid-template-columns: 1fr;
+      }
+      .step-arrow { display: none; }
+
+      .stat-bar { grid-template-columns: 1fr; }
+      .stat-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--gray-light); }
+
+      .case-grid,
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+
+      .credentials-grid { grid-template-columns: 1fr; }
+
+      .hero-buttons { flex-direction: column; align-items: center; }
+      .hero-trust { flex-direction: column; align-items: center; gap: 0.75rem; }
+
+      section { padding: 72px 0; }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+
+      .bar-label { width: 110px; font-size: 0.9rem; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-heading { font-size: 2.4rem; }
+      .section-heading { font-size: 2rem; }
+      .metric-grid { grid-template-columns: 1fr 1fr; }
+      .credentials-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a class="nav-logo" href="#hero">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="5" r="3" fill="#2563EB"/>
+      <circle cx="5" cy="21" r="3" fill="#2563EB"/>
+      <circle cx="23" cy="21" r="3" fill="#2563EB"/>
+      <circle cx="14" cy="14" r="2" fill="#60a5fa" opacity="0.7"/>
+      <line x1="14" y1="8" x2="14" y2="12" stroke="#2563EB" stroke-width="1.4" opacity="0.6"/>
+      <line x1="14" y1="16" x2="7" y2="19" stroke="#2563EB" stroke-width="1.4" opacity="0.6"/>
+      <line x1="14" y1="16" x2="21" y2="19" stroke="#2563EB" stroke-width="1.4" opacity="0.6"/>
+      <line x1="11.5" y1="6.5" x2="6.5" y2="18.5" stroke="#2563EB" stroke-width="1.4" opacity="0.35"/>
+      <line x1="16.5" y1="6.5" x2="21.5" y2="18.5" stroke="#2563EB" stroke-width="1.4" opacity="0.35"/>
+      <line x1="8" y1="21" x2="20" y2="21" stroke="#2563EB" stroke-width="1.4" opacity="0.35"/>
+    </svg>
+    ORaI
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#hero" data-zh="简介">Introduction</a></li>
+    <li><a href="#solution" data-zh="解决方案">Solution</a></li>
+    <li><a href="#how-it-works" data-zh="如何运作">How It Works</a></li>
+    <li><a href="#industries" data-zh="行业应用">Industries</a></li>
+    <li><a href="#case-study" data-zh="案例研究">Case Study</a></li>
+    <li><a href="#services" data-zh="服务">Services</a></li>
+    <li><a href="#about" data-zh="关于">About</a></li>
+    <li><a href="#contact" data-zh="联系我们">Contact</a></li>
+  </ul>
+
+  <button id="lang-toggle" onclick="toggleLang()">EN</button>
+  <a class="nav-cta" href="#contact" data-zh="预约咨询">Book a Consultation</a>
+
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#hero" onclick="closeMobile()" data-zh="简介">Introduction</a>
+  <a href="#solution" onclick="closeMobile()" data-zh="解决方案">Solution</a>
+  <a href="#how-it-works" onclick="closeMobile()" data-zh="如何运作">How It Works</a>
+  <a href="#industries" onclick="closeMobile()" data-zh="行业应用">Industries</a>
+  <a href="#case-study" onclick="closeMobile()" data-zh="案例研究">Case Study</a>
+  <a href="#services" onclick="closeMobile()" data-zh="服务">Services</a>
+  <a href="#about" onclick="closeMobile()" data-zh="关于">About</a>
+  <a href="#contact" onclick="closeMobile()" data-zh="联系我们">Contact</a>
+  <a class="mobile-cta" href="#contact" onclick="closeMobile()" data-zh="预约咨询">Book a Consultation</a>
+</div>
+
+<!-- ─── HERO ──────────────────────────────────────────────────── -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge" data-zh="AI + 运筹学咨询 · 新加坡">AI + Operations Research Consulting · Singapore</div>
+    <h1 class="hero-heading" data-zh-html="为您最复杂的<br>运营难题<span>设计优化算法</span>">
+      We Design Optimization Algorithms<br>for Your <span>Hardest Operational Problems</span>
+    </h1>
+    <p class="hero-sub" data-zh="借助 AI 驱动的自动算法设计，我们解决商业求解器无法应对的组合优化难题——涵盖能源调度、生产排程、车队路由、网络规划、收益管理、投资组合优化等领域——无需数月的人工算法工程。">
+      Using AI-driven automated algorithm design, we solve the combinatorial optimization challenges that stump commercial solvers — across energy dispatch, production scheduling, fleet routing, network planning, revenue management, portfolio optimization, and beyond — without months of manual algorithm engineering.
+    </p>
+    <div class="hero-buttons">
+      <a href="#contact" class="btn-primary" data-zh="预约咨询 →">Book a Consultation →</a>
+      <a href="#case-study" class="btn-secondary" data-zh="查看案例 ↓">See Case Study ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROBLEM ───────────────────────────────────────────────── -->
+<section id="problem">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="挑战">The Challenge</span>
+      <h2 class="section-heading" data-zh="为何现实中的运筹学问题难以解决">Why real-world OR problems remain unsolved</h2>
+      <p class="section-sub" data-zh="商业求解器与教科书算法并非为工业运营的复杂现实而设计。三大根本障碍横亘其中。">Commercial solvers and textbook algorithms were not designed for the messy, large-scale realities of industrial operations. Three fundamental barriers stand in the way.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="card fade-in fade-in-delay-1">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3 data-zh="商业求解器在工业规模下遭遇瓶颈">Commercial solvers hit a wall at industrial scale</h3>
+        <p data-zh="Gurobi、CPLEX 等工具在标准算例上表现良好，但真实工业问题——涉及数千个作业、车辆或资产，约束复杂——已超出任何现成求解器在实际时限内的处理能力。">Tools like Gurobi and CPLEX work well on textbook instances. But real industrial problems — involving thousands of jobs, vehicles, or assets with complex constraints — exceed what any off-the-shelf solver can handle within practical time limits.</p>
+      </div>
+      <div class="card fade-in fade-in-delay-2">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 data-zh="定制算法耗费数月专家精力">Custom algorithms take months of expert effort</h3>
+        <p data-zh="当求解器力不从心，唯一的选择是手工设计启发式算法。这需要深厚的运筹学专业知识、细致的问题分析，以及数月的迭代工程——大多数组织无力为每个新挑战重复这一过程。">When solvers fall short, the only option is a hand-crafted heuristic. Designing one demands deep OR expertise, careful problem analysis, and months of iterative engineering — a process most organizations simply cannot afford to repeat for every new challenge.</p>
+      </div>
+      <div class="card fade-in fade-in-delay-3">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </div>
+        <h3 data-zh="算法无法跨问题迁移">Algorithms don't transfer across problems</h3>
+        <p data-zh="针对某一调度问题调优的元启发式算法，很少能推广到其他问题——即便结构相似。每个新问题变体都需从零重启设计流程，此前的算法开发投入无法复用。">A metaheuristic tuned for one scheduling problem rarely generalizes to another — even structurally similar ones. Every new problem variant restarts the design process from scratch, with no reuse of prior investment in algorithm development.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SOLUTION ──────────────────────────────────────────────── -->
+<section id="solution">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="我们的方法">Our Approach</span>
+      <h2 class="section-heading" data-zh="ORaI：LLM 驱动的自动算法设计">ORaI: LLM-driven automated algorithm design</h2>
+      <p class="section-sub" data-zh="大多数 AI 方法试图直接求解优化问题——面对新颖或大规模问题时往往失败。ORaI 另辟蹊径：我们利用大型语言模型设计算法本身，生成一组互补的启发式算法，共同覆盖问题的全部实例类型与运行时需求。">Most AI methods try to solve optimization problems directly — and fail on anything novel or large-scale. ORaI takes a different path: we use large language models to <em>design the algorithms</em> themselves, producing a portfolio of complementary heuristics that collectively cover your problem's full landscape of instances and runtime requirements.</p>
+    </div>
+
+    <div class="steps-flow">
+      <div class="step-card fade-in fade-in-delay-1">
+        <div class="step-number" data-zh="阶段 01">Stage 01</div>
+        <div class="card-icon" style="margin-bottom:1rem;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3 data-zh="模块化问题分解">Modular Problem Decomposition</h3>
+        <p data-zh="我们将问题编码为模块化组件——状态表示、动作空间与领域工具库。这种分离使 LLM 专注于决策逻辑，而非从头重新学习领域知识，同时实现跨不同问题类型的泛化能力。">We encode your problem as modular components — state representation, action space, and a domain tool library. This separation means our LLM focuses purely on decision logic, not on re-learning your domain from scratch. It also enables generalization: the same structure works across radically different problem types.</p>
+      </div>
+      <div class="step-arrow">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="step-card fade-in fade-in-delay-2">
+        <div class="step-number" data-zh="阶段 02">Stage 02</div>
+        <div class="card-icon" style="margin-bottom:1rem;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+        </div>
+        <h3 data-zh="互补算法组合进化">Complementary Portfolio Evolution</h3>
+        <p data-zh="LLM 驱动的进化过程在明确的运行时预算下，迭代生成、评估并筛选启发式算法。与其产出单一算法，它构建的是一组互补的算法组合——在各类实例中集体占优，覆盖从快速应急决策到深度隔夜优化的全谱需求。">An LLM-driven evolutionary process iteratively generates, evaluates, and selects heuristics under explicit runtime budgets. Rather than producing a single algorithm, it constructs a complementary portfolio — heuristics that collectively dominate across instance types, from fast emergency decisions to deep overnight optimization.</p>
+      </div>
+      <div class="step-arrow">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="step-card fade-in fade-in-delay-3">
+        <div class="step-number" data-zh="交付">Delivery</div>
+        <div class="card-icon" style="margin-bottom:1rem;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </div>
+        <h3 data-zh="生产就绪的算法组合">Production-Ready Algorithm Portfolio</h3>
+        <p data-zh="您将获得简洁可执行的 Python 代码——一套算法，其性能超越人工设计的启发式方法和现有 LLM 方法，并能零样本泛化至任何先前方法从未遇到的问题，无需针对特定问题进行预训练。">You receive clean, executable Python code — a set of algorithms that outperform both human-designed heuristics and existing LLM-based methods, and that generalize zero-shot even to problems no prior method has encountered. No problem-specific pretraining required.</p>
+      </div>
+    </div>
+
+    <div class="stat-bar fade-in">
+      <div class="stat-item">
+        <span class="stat-number" data-zh="零样本">Zero-shot</span>
+        <span class="stat-label" data-zh="泛化至训练语料中不存在的结构性新问题">generalization to structurally novel problems absent from any training corpus</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" data-zh="任意领域">Any domain</span>
+        <span class="stat-label" data-zh="适用于任意组合优化问题——调度、路由、分配、规划等">applicable to any combinatorial optimization problem — scheduling, routing, assignment, planning, and beyond</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" data-zh="全时段覆盖">Full spectrum</span>
+        <span class="stat-label" data-zh="从实时应急决策到高质量隔夜战略规划">from real-time emergency decisions to high-quality overnight strategic planning</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ──────────────────────────────────────────── -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="如何运作">How It Works</span>
+      <h2 class="section-heading" data-zh="从一段描述到生产级算法">From a plain description to a production-ready algorithm</h2>
+      <p class="section-sub" data-zh="你不需要懂运筹学。只需像跟同事描述业务问题一样告诉我们——我们处理所有建模、求解与交付工作。">You don't need to know operations research. Just describe your problem as you would to a colleague — we handle all the modelling, solving, and delivery.</p>
+    </div>
+
+    <div class="hiw-layout">
+
+      <!-- Left: timeline steps -->
+      <div class="hiw-steps">
+
+        <div class="hiw-step fade-in fade-in-delay-1">
+          <div class="hiw-step-left">
+            <div class="hiw-step-circle">01</div>
+          </div>
+          <div class="hiw-step-body">
+            <div class="hiw-step-title" data-zh="用自然语言描述你的挑战">Describe your challenge in plain language</div>
+            <div class="hiw-step-desc" data-zh="告诉我们你的运营场景、目标与约束——无需数学公式，无需技术背景。一段话即可启动整个流程。">Tell us about your operational scenario, objectives, and constraints — no formulas, no technical background required. A paragraph is all it takes to start.</div>
+          </div>
+        </div>
+
+        <div class="hiw-step fade-in fade-in-delay-2">
+          <div class="hiw-step-left">
+            <div class="hiw-step-circle">02</div>
+          </div>
+          <div class="hiw-step-body">
+            <div class="hiw-step-title" data-zh="AI 自动完成问题建模">AI automatically models your problem</div>
+            <div class="hiw-step-desc" data-zh="我们将你的描述转化为严格的组合优化问题，定义状态空间、目标函数与约束结构——这一步通常需要资深运筹专家数周时间，我们的系统自动完成。">We translate your description into a rigorous combinatorial optimization problem — defining state space, objective function, and constraint structure. What typically takes senior OR experts weeks, our system does automatically.</div>
+          </div>
+        </div>
+
+        <div class="hiw-step fade-in fade-in-delay-3">
+          <div class="hiw-step-left">
+            <div class="hiw-step-circle">03</div>
+          </div>
+          <div class="hiw-step-body">
+            <div class="hiw-step-title" data-zh="LLM 驱动算法进化与优选">LLM-driven algorithm evolution &amp; selection</div>
+            <div class="hiw-step-desc" data-zh="大语言模型在明确的运行时预算下迭代生成、评估并筛选启发式算法，最终构建一组互补算法——集体覆盖你问题的全部实例类型与时效需求。">Large language models iteratively generate, evaluate, and select heuristics under explicit runtime budgets — building a portfolio of complementary algorithms that collectively cover every instance type and time horizon your problem demands.</div>
+          </div>
+        </div>
+
+        <div class="hiw-step fade-in fade-in-delay-3">
+          <div class="hiw-step-left">
+            <div class="hiw-step-circle">04</div>
+          </div>
+          <div class="hiw-step-body">
+            <div class="hiw-step-title" data-zh="交付完整解决方案">Receive your complete solution</div>
+            <div class="hiw-step-desc" data-zh="你将收到可直接运行的 Python 算法代码、详尽的性能基准报告，以及将算法集成进你现有系统的全程技术支持。">You receive production-ready Python algorithm code, a detailed performance benchmark report, and full technical support to integrate the solution into your existing systems.</div>
+          </div>
+        </div>
+
+      </div><!-- /hiw-steps -->
+
+      <!-- Right: case study card -->
+      <div class="hiw-case-card fade-in fade-in-delay-2">
+        <div class="hiw-case-eyebrow" data-zh="场景示例">Example scenario</div>
+
+        <p class="hiw-case-quote" data-zh="&ldquo;我们在东南亚运营 150 辆配送车，每日覆盖 600–800 个配送点。现有路由软件需要 2 小时计算，旺季根本来不及出车，还需要大量人工调整。&rdquo;">
+          &ldquo;We operate 150 delivery vehicles across Southeast Asia, serving 600–800 drop points daily. Our routing software takes 2 hours to compute and still needs heavy manual adjustment — during peak season we can't even finish before drivers need to depart.&rdquo;
+        </p>
+
+        <div class="hiw-case-divider"></div>
+
+        <div class="hiw-case-result-label" data-zh="ORaI 交付成果 · 3 周完成">ORaI delivery · completed in 3 weeks</div>
+
+        <div class="hiw-case-metrics">
+          <div class="hiw-metric">
+            <div class="hiw-metric-value">23%</div>
+            <div class="hiw-metric-label" data-zh="运输总成本降低">reduction in total transport cost</div>
+          </div>
+          <div class="hiw-metric">
+            <div class="hiw-metric-value">8 min</div>
+            <div class="hiw-metric-label" data-zh="路线规划时间（原为 2 小时）">route planning time (down from 2 hrs)</div>
+          </div>
+          <div class="hiw-metric full">
+            <div class="hiw-metric-value">4×</div>
+            <div class="hiw-metric-label" data-zh="旺季峰值负载处理能力提升">peak-season load capacity improvement</div>
+          </div>
+        </div>
+
+        <div class="hiw-case-tag" data-zh="零样本泛化 · 无需历史训练数据">Zero-shot generalisation · no historical training data required</div>
+      </div><!-- /hiw-case-card -->
+
+    </div><!-- /hiw-layout -->
+
+    <div class="hiw-cta fade-in">
+      <a href="#contact" class="btn-primary" data-zh="描述你的问题，进行咨询 →">Describe your problem for furhter consultation →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── INDUSTRIES ────────────────────────────────────────────── -->
+<section id="industries">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;">
+      <span class="section-label" data-zh="应用领域">Application Domains</span>
+      <h2 class="section-heading" data-zh="运筹优化覆盖每一个主要行业">OR optimization applies across every major industry</h2>
+      <p class="section-sub" style="margin:0 auto;" data-zh="从电网到电商平台，运筹学在各个层面驱动决策。ORaI 的自动算法设计适用于所有行业。">From energy grids to e-commerce platforms, operations research drives decisions at every scale. ORaI's automated algorithm design works across all of them.</p>
+    </div>
+
+    <div class="industries-grid">
+
+      <!-- 1. Energy -->
+      <div class="industry-card ind-energy fade-in fade-in-delay-1">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="industry-title" data-zh="能源">Energy</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="无功调度、机组组合、电力市场定价与出清">Reactive power scheduling, unit commitment, electricity market pricing &amp; clearing</div>
+      </div>
+
+      <!-- 2. Aerospace & Defense -->
+      <div class="industry-card ind-aerospace fade-in fade-in-delay-1">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M12 2L8.5 8.5 2 9.27l5 4.87L5.82 21 12 17.77 18.18 21l-1.18-6.86L22 9.27l-6.5-.77L12 2z"/></svg>
+        </div>
+        <div class="industry-title" data-zh="航空航天与国防">Aerospace &amp; Defense</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="航天器轨迹优化、测试资源调度、作战资源分配与后勤">Spacecraft trajectory optimization, test resource scheduling, combat resource allocation &amp; logistics</div>
+      </div>
+
+      <!-- 3. Aviation -->
+      <div class="industry-card ind-aviation fade-in fade-in-delay-2">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        </div>
+        <div class="industry-title" data-zh="航空">Aviation</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="航班调度、中断恢复、网络规划、航线与收益管理">Flight scheduling, disruption recovery, network planning, route &amp; revenue management</div>
+      </div>
+
+      <!-- 4. Transportation -->
+      <div class="industry-card ind-transport fade-in fade-in-delay-2">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="industry-title" data-zh="交通运输">Transportation</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="地铁/铁路维修调度、人员排班、智慧港口调度与协调">Metro/rail maintenance scheduling, crew rostering, smart port scheduling &amp; coordination</div>
+      </div>
+
+      <!-- 5. Industry 4.0 -->
+      <div class="industry-card ind-industry fade-in fade-in-delay-3">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+        </div>
+        <div class="industry-title" data-zh="工业 4.0">Industry 4.0</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="生产调度、销售与运营规划、智能制造、库存与仓储网络优化">Production scheduling, S&amp;OP, smart manufacturing, inventory &amp; warehouse network optimization</div>
+      </div>
+
+      <!-- 6. Retail -->
+      <div class="industry-card ind-retail fade-in fade-in-delay-1">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+        <div class="industry-title" data-zh="零售">Retail</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="智能选址、员工排班、收益管理与库存优化">Smart site selection, staff rostering, revenue management &amp; inventory optimization</div>
+      </div>
+
+      <!-- 7. E-Commerce -->
+      <div class="industry-card ind-ecommerce fade-in fade-in-delay-2">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </div>
+        <div class="industry-title" data-zh="电子商务">E-Commerce</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="营销策略优化、广告预算分配与流量分发">Marketing strategy optimization, ad budget allocation &amp; traffic distribution</div>
+      </div>
+
+      <!-- 8. Warehousing & Logistics -->
+      <div class="industry-card ind-logistics fade-in fade-in-delay-2">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="industry-title" data-zh="仓储与物流">Warehousing &amp; Logistics</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="路线优化、网络规划、补货、波次调度与拣货路径优化">Route optimization, network planning, replenishment, wave scheduling &amp; pick path optimization</div>
+      </div>
+
+      <!-- 9. Finance -->
+      <div class="industry-card ind-finance fade-in fade-in-delay-3">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="industry-title" data-zh="金融">Finance</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="投资组合优化、量化市场计算与风险管理">Portfolio optimization, quantitative market computation &amp; risk management</div>
+      </div>
+
+      <!-- 10. Academia & Research (last) -->
+      <div class="industry-card ind-academia fade-in fade-in-delay-3">
+        <div class="industry-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="industry-title" data-zh="学术与科研">Academia &amp; Research</div>
+        <div class="industry-divider"></div>
+        <div class="industry-desc" data-zh="运筹与管理、自动化、计算机、机械、工业、电气与化工工程">OR &amp; management, automation, CS, mechanical, industrial, electrical &amp; chemical engineering</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── CASE STUDY ─────────────────────────────────────────────── -->
+<section id="case-study">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="案例研究">Case Studies</span>
+      <h2 class="section-heading" data-zh="在 4 个组合优化基准上达到最优性能">State-of-the-art performance across 4 combinatorial optimization benchmarks</h2>
+      <p class="section-sub" data-zh="ORaI 在作业车间调度（JSSP）、旅行商问题（TSP）、有容量限制的车辆路由（CVRP）和新型港口调度问题（PSP）上进行评估，与经典求解器、学习方法及现有 LLM 框架进行基准对比。">ORaI is evaluated on Job Shop Scheduling (JSSP), Traveling Salesman Problem (TSP), Capacitated Vehicle Routing (CVRP), and a novel Port Scheduling Problem (PSP) — benchmarked against classical solvers, learning-based methods, and existing LLM-based frameworks.</p>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="bench-summary fade-in">
+      <div class="bench-summary-card active" onclick="switchTab('jssp')" data-tab="jssp">
+        <div class="bsc-label">JSSP</div>
+        <div class="bsc-value">1.95%</div>
+        <div class="bsc-sub" data-zh="平均差距 · 综合最优">avg gap · best overall</div>
+        <div class="bsc-note">vs 11.30% HeurAgenix · 9.49% OR-Tools</div>
+      </div>
+      <div class="bench-summary-card" onclick="switchTab('tsp')" data-tab="tsp">
+        <div class="bsc-label">TSP</div>
+        <div class="bsc-value">1.11%</div>
+        <div class="bsc-sub" data-zh="平均差距 · 综合最优">avg gap · best overall</div>
+        <div class="bsc-note">vs 8.29% HeurAgenix · 7.55% LEHD</div>
+      </div>
+      <div class="bench-summary-card" onclick="switchTab('cvrp')" data-tab="cvrp">
+        <div class="bsc-label">CVRP</div>
+        <div class="bsc-value">6.35%</div>
+        <div class="bsc-sub" data-zh="平均差距 · LLM 方法最优">avg gap · best LLM method</div>
+        <div class="bsc-note">vs 17.33% HeurAgenix · 8.87% EoH-S</div>
+      </div>
+      <div class="bench-summary-card" onclick="switchTab('psp')" data-tab="psp">
+        <div class="bsc-label">PSP</div>
+        <div class="bsc-value">0.83%</div>
+        <div class="bsc-sub" data-zh="平均差距 · 零样本新问题">avg gap · zero-shot novel problem</div>
+        <div class="bsc-note">vs 22.61% Gurobi 30 min · 14.54% HeurAgenix</div>
+      </div>
+    </div>
+
+    <!-- Performance comparison figure -->
+    <div class="perf-figure fade-in">
+      <img src="performance_comparison.png" alt="Performance comparison across JSSP, TSP, CVRP, and PSP — average quality gap vs. average runtime" />
+      <p class="perf-figure-caption">Average quality gap (%) vs. average runtime across all four benchmark problems. Lower-left is best. ORaI (★) consistently achieves the best quality–time trade-off across all domains.</p>
+    </div>
+
+    <!-- Detailed benchmark tables -->
+    <div class="benchmark-tabs fade-in" style="margin-top:3.5rem;">
+      <div class="bench-tab-buttons">
+        <button class="bench-tab-btn active" onclick="switchTab('jssp')" data-zh="作业车间调度 (JSSP)">Job Shop Scheduling (JSSP)</button>
+        <button class="bench-tab-btn" onclick="switchTab('tsp')" data-zh="旅行商问题 (TSP)">Traveling Salesman (TSP)</button>
+        <button class="bench-tab-btn" onclick="switchTab('cvrp')" data-zh="车辆路由 (CVRP)">Vehicle Routing (CVRP)</button>
+        <button class="bench-tab-btn" onclick="switchTab('psp')" data-zh="港口调度 (PSP)">Port Scheduling (PSP)</button>
+      </div>
+
+      <!-- ── JSSP ── -->
+      <div id="tab-jssp" class="bench-tab-panel active">
+        <div class="bench-header">
+          <h3 class="bench-title" data-zh="作业车间调度问题 (JSSP)">Job Shop Scheduling Problem (JSSP)</h3>
+          <p class="bench-desc" data-zh="15 个标准基准算例：小规模（la10–la14，10 个作业 × 5 台机器）、中规模（swv18–ta69，20 个作业 × 10–15 台机器）、大规模（ta73–ta77，20 个作业 × 15–20 台机器）。差距 = （解 − 最优）/ 最优 × 100%。时间单位为秒，差距越小越好。">15 standard benchmark instances: small (la10–la14, 10 jobs × 5 machines), medium (swv18–ta69, 20 jobs × 10–15 machines), large (ta73–ta77, 20 jobs × 15–20 machines). Gap = (Solution − Optimal) / Optimal × 100%. Time in seconds. Lower gap is better.</p>
+        </div>
+        <div class="bench-table-wrap">
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Scale</th><th rowspan="2">Instance</th>
+                <th colspan="2">OR-Tools</th>
+                <th colspan="2">Iterated Greedy</th>
+                <th colspan="2">FunSearch</th>
+                <th colspan="2">EoH</th>
+                <th colspan="2">EoH-S</th>
+                <th colspan="2">HeurAgenix</th>
+                <th colspan="2">ORaI</th>
+              </tr>
+              <tr class="sub-header">
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="5">Small</td><td>la10</td><td>0.00</td><td>0.48</td><td>0.00</td><td>60.02</td><td>12.65</td><td>0.34</td><td>6.75</td><td>0.12</td><td>0.00</td><td>0.07</td><td>5.64</td><td>0.05</td><td class="mace">0.00</td><td class="mace">0.08</td></tr>
+              <tr><td>la11</td><td>0.00</td><td>0.87</td><td>0.00</td><td>60.07</td><td>12.05</td><td>0.54</td><td>6.35</td><td>0.18</td><td>6.14</td><td>0.13</td><td>29.05</td><td>0.08</td><td class="mace">0.99</td><td class="mace">0.11</td></tr>
+              <tr><td>la12</td><td>0.00</td><td>0.68</td><td>0.00</td><td>60.05</td><td>11.25</td><td>0.54</td><td>5.60</td><td>0.18</td><td>15.98</td><td>0.13</td><td>23.77</td><td>0.09</td><td class="mace">0.07</td><td class="mace">0.11</td></tr>
+              <tr><td>la13</td><td>0.00</td><td>3.16</td><td>0.00</td><td>60.05</td><td>16.40</td><td>0.96</td><td>10.06</td><td>0.14</td><td>0.35</td><td>0.12</td><td>16.26</td><td>0.08</td><td class="mace">0.35</td><td class="mace">0.11</td></tr>
+              <tr><td>la14</td><td>0.00</td><td>0.31</td><td>0.00</td><td>60.07</td><td>15.60</td><td>2.75</td><td>9.45</td><td>0.85</td><td>0.00</td><td>0.13</td><td>15.87</td><td>0.08</td><td class="mace">0.00</td><td class="mace">0.11</td></tr>
+              <tr><td rowspan="5">Medium</td><td>swv18</td><td>1.40</td><td>60.02</td><td>15.64</td><td>60.07</td><td>18.25</td><td>5.26</td><td>11.39</td><td>3.40</td><td>2.35</td><td>3.22</td><td>1.12</td><td>1.61</td><td class="mace">2.35</td><td class="mace">2.18</td></tr>
+              <tr><td>swv20</td><td>4.68</td><td>60.02</td><td>16.12</td><td>60.07</td><td>17.60</td><td>5.34</td><td>10.75</td><td>3.40</td><td>5.65</td><td>3.12</td><td>6.80</td><td>1.51</td><td class="mace">2.54</td><td class="mace">2.17</td></tr>
+              <tr><td>ta53</td><td>18.18</td><td>60.01</td><td>32.14</td><td>60.05</td><td>16.90</td><td>7.00</td><td>10.10</td><td>8.40</td><td>4.48</td><td>7.56</td><td>5.74</td><td>4.09</td><td class="mace">0.93</td><td class="mace">5.45</td></tr>
+              <tr><td>ta60</td><td>18.07</td><td>60.01</td><td>44.47</td><td>60.07</td><td>19.45</td><td>10.50</td><td>12.25</td><td>9.45</td><td>5.03</td><td>8.21</td><td>11.51</td><td>4.11</td><td class="mace">2.03</td><td class="mace">5.43</td></tr>
+              <tr><td>ta69</td><td>25.17</td><td>60.01</td><td>43.24</td><td>60.05</td><td>22.80</td><td>31.25</td><td>14.25</td><td>28.70</td><td>9.34</td><td>16.64</td><td>8.90</td><td>8.51</td><td class="mace">1.97</td><td class="mace">10.91</td></tr>
+              <tr><td rowspan="5">Large</td><td>ta73</td><td>16.41</td><td>60.03</td><td>35.25</td><td>60.07</td><td>22.10</td><td>31.25</td><td>13.60</td><td>28.70</td><td>7.22</td><td>80.30</td><td>3.90</td><td>31.22</td><td class="mace">4.68</td><td class="mace">38.84</td></tr>
+              <tr><td>ta74</td><td>13.54</td><td>60.02</td><td>34.14</td><td>60.05</td><td>26.40</td><td>62.00</td><td>17.95</td><td>57.75</td><td>2.64</td><td>90.74</td><td>13.59</td><td>32.13</td><td class="mace">0.79</td><td class="mace">40.61</td></tr>
+              <tr><td>ta75</td><td>15.30</td><td>60.03</td><td>25.58</td><td>60.07</td><td>25.60</td><td>62.00</td><td>17.25</td><td>57.75</td><td>12.63</td><td>82.76</td><td>12.56</td><td>32.19</td><td class="mace">3.20</td><td class="mace">41.05</td></tr>
+              <tr><td>ta76</td><td>18.42</td><td>60.03</td><td>28.13</td><td>60.07</td><td>29.30</td><td>93.00</td><td>20.60</td><td>86.80</td><td>6.92</td><td>85.82</td><td>6.19</td><td>32.39</td><td class="mace">5.55</td><td class="mace">38.40</td></tr>
+              <tr><td>ta77</td><td>11.20</td><td>60.03</td><td>30.12</td><td>60.05</td><td>28.60</td><td>93.00</td><td>19.90</td><td>86.80</td><td>9.55</td><td>80.18</td><td>8.64</td><td>32.21</td><td class="mace">3.78</td><td class="mace">42.58</td></tr>
+              <tr class="avg-row"><td colspan="2"><strong>Average</strong></td><td><strong>9.49</strong></td><td><strong>40s</strong></td><td><strong>20.32</strong></td><td><strong>60s</strong></td><td><strong>19.66</strong></td><td><strong>27s</strong></td><td><strong>12.42</strong></td><td><strong>25s</strong></td><td><strong>5.88</strong></td><td><strong>31s</strong></td><td><strong>11.30</strong></td><td><strong>12s</strong></td><td class="mace"><strong>1.95</strong></td><td class="mace"><strong>15s</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TSP ── -->
+      <div id="tab-tsp" class="bench-tab-panel">
+        <div class="bench-header">
+          <h3 class="bench-title" data-zh="旅行商问题 (TSP)">Traveling Salesman Problem (TSP)</h3>
+          <p class="bench-desc" data-zh="15 个 TSPLIB 基准算例：小规模（29–152 个城市）、中规模（417–666 个城市）、大规模（1000–1889 个城市）。差距 = （解 − 最优）/ 最优 × 100%。时间单位为秒，差距越小越好。† 结果来自原始论文。">15 TSPLIB benchmark instances: small (29–152 cities), medium (417–666 cities), large (1000–1889 cities). Gap = (Solution − Optimal) / Optimal × 100%. Time in seconds. Lower gap is better. † Results from cited papers.</p>
+        </div>
+        <div class="bench-table-wrap">
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Scale</th><th rowspan="2">Instance</th>
+                <th colspan="2">OR-Tools</th>
+                <th colspan="2">POMO†</th>
+                <th colspan="2">LEHD†</th>
+                <th colspan="2">FunSearch</th>
+                <th colspan="2">EoH</th>
+                <th colspan="2">EoH-S</th>
+                <th colspan="2">HeurAgenix†</th>
+                <th colspan="2">ORaI</th>
+              </tr>
+              <tr class="sub-header">
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="5">Small</td><td>kroD100</td><td>0.00</td><td>300.16</td><td>4.52</td><td>0.10</td><td>2.47</td><td>0.12</td><td>4.91</td><td>0.50</td><td>4.20</td><td>0.80</td><td>3.94</td><td>0.27</td><td>6.19</td><td>0.28</td><td class="mace">0.05</td><td class="mace">0.34</td></tr>
+              <tr><td>kroE100</td><td>0.29</td><td>300.18</td><td>4.35</td><td>0.10</td><td>2.53</td><td>0.12</td><td>14.70</td><td>0.50</td><td>6.80</td><td>0.80</td><td>4.56</td><td>0.27</td><td>6.46</td><td>0.28</td><td class="mace">0.06</td><td class="mace">0.34</td></tr>
+              <tr><td>pr107</td><td>0.00</td><td>300.17</td><td>4.87</td><td>0.10</td><td>2.68</td><td>0.13</td><td>15.50</td><td>1.50</td><td>3.68</td><td>0.80</td><td>2.62</td><td>0.34</td><td>3.65</td><td>0.36</td><td class="mace">0.88</td><td class="mace">0.45</td></tr>
+              <tr><td>bayg29</td><td>0.00</td><td>300.04</td><td>3.14</td><td>0.10</td><td>1.95</td><td>0.08</td><td>12.80</td><td>0.40</td><td>3.20</td><td>0.02</td><td>2.24</td><td>0.01</td><td>1.37</td><td>0.01</td><td class="mace">0.93</td><td class="mace">0.01</td></tr>
+              <tr><td>pr152</td><td>0.85</td><td>300.36</td><td>5.27</td><td>0.20</td><td>2.81</td><td>0.18</td><td>23.21</td><td>3.20</td><td>7.49</td><td>1.10</td><td>2.05</td><td>0.88</td><td>2.41</td><td>1.07</td><td class="mace">0.93</td><td class="mace">0.33</td></tr>
+              <tr><td rowspan="5">Medium</td><td>d657</td><td>4.82</td><td>306.22</td><td>25.14</td><td>19.22</td><td>5.63</td><td>26.85</td><td>25.40</td><td>180.50</td><td>19.50</td><td>85.00</td><td>7.41</td><td>68.29</td><td>9.30</td><td>85.83</td><td class="mace">1.37</td><td class="mace">97.50</td></tr>
+              <tr><td>ali535</td><td>6.18</td><td>305.27</td><td>22.52</td><td>11.45</td><td>4.89</td><td>24.92</td><td>28.60</td><td>95.80</td><td>22.30</td><td>42.00</td><td>11.72</td><td>36.92</td><td>11.25</td><td>53.93</td><td class="mace">1.24</td><td class="mace">48.87</td></tr>
+              <tr><td>fl417</td><td>2.01</td><td>302.59</td><td>17.58</td><td>15.45</td><td>4.42</td><td>23.28</td><td>21.50</td><td>48.20</td><td>15.80</td><td>22.50</td><td>3.67</td><td>16.76</td><td>3.07</td><td>20.31</td><td class="mace">1.29</td><td class="mace">24.89</td></tr>
+              <tr><td>gr666</td><td>3.82</td><td>308.17</td><td>26.14</td><td>14.25</td><td>5.87</td><td>27.41</td><td>24.10</td><td>185.60</td><td>18.90</td><td>90.00</td><td>7.74</td><td>69.97</td><td>14.98</td><td>87.26</td><td class="mace">0.01</td><td class="mace">91.67</td></tr>
+              <tr><td>u574</td><td>4.76</td><td>305.45</td><td>23.84</td><td>13.52</td><td>5.14</td><td>25.36</td><td>13.23</td><td>118.40</td><td>17.40</td><td>62.80</td><td>9.65</td><td>44.96</td><td>10.46</td><td>55.75</td><td class="mace">1.51</td><td class="mace">64.89</td></tr>
+              <tr><td rowspan="5">Large</td><td>fl1400</td><td>5.61</td><td>333.18</td><td>45.47</td><td>34.44</td><td>13.76</td><td>38.76</td><td>25.20</td><td>1850.20</td><td>18.50</td><td>820.50</td><td>2.67</td><td>668.68</td><td>7.48</td><td>766.62</td><td class="mace">0.88</td><td class="mace">188.00</td></tr>
+              <tr><td>rl1889</td><td>9.17</td><td>356.91</td><td>75.14</td><td>64.53</td><td>16.48</td><td>72.18</td><td>22.50</td><td>2680.80</td><td>25.80</td><td>2100.00</td><td>12.33</td><td>1702.32</td><td>12.12</td><td>1926.51</td><td class="mace">2.80</td><td class="mace">248.93</td></tr>
+              <tr><td>vm1748</td><td>9.37</td><td>354.16</td><td>95.85</td><td>59.52</td><td>15.92</td><td>65.43</td><td>28.90</td><td>1720.45</td><td>21.20</td><td>1680.30</td><td>7.26</td><td>1339.19</td><td>12.27</td><td>1556.55</td><td class="mace">1.58</td><td class="mace">212.26</td></tr>
+              <tr><td>u1432</td><td>5.54</td><td>332.78</td><td>98.71</td><td>46.95</td><td>15.83</td><td>52.37</td><td>23.70</td><td>1015.80</td><td>17.60</td><td>950.60</td><td>9.47</td><td>727.12</td><td>11.63</td><td>831.10</td><td class="mace">1.83</td><td class="mace">205.46</td></tr>
+              <tr><td>dsj1000</td><td>7.85</td><td>317.28</td><td>40.46</td><td>39.53</td><td>12.91</td><td>48.94</td><td>19.80</td><td>480.25</td><td>13.40</td><td>380.70</td><td>8.18</td><td>240.09</td><td>11.69</td><td>319.75</td><td class="mace">1.26</td><td class="mace">169.32</td></tr>
+              <tr class="avg-row"><td colspan="2"><strong>Average</strong></td><td><strong>4.02</strong></td><td><strong>315s</strong></td><td><strong>32.87</strong></td><td><strong>21s</strong></td><td><strong>7.55</strong></td><td><strong>27s</strong></td><td><strong>20.27</strong></td><td><strong>559s</strong></td><td><strong>14.38</strong></td><td><strong>416s</strong></td><td><strong>6.37</strong></td><td><strong>328s</strong></td><td><strong>8.29</strong></td><td><strong>380s</strong></td><td class="mace"><strong>1.11</strong></td><td class="mace"><strong>90s</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CVRP ── -->
+      <div id="tab-cvrp" class="bench-tab-panel">
+        <div class="bench-header">
+          <h3 class="bench-title" data-zh="有容量限制的车辆路由问题 (CVRP)">Capacitated Vehicle Routing Problem (CVRP)</h3>
+          <p class="bench-desc" data-zh="15 个 X 系列基准算例：小规模（X-n106–X-n251）、中规模（X-n317–X-n439）、大规模（X-n641–X-n957）。差距 = （解 − 最优）/ 最优 × 100%。时间单位为秒，差距越小越好。† 结果来自原始论文。">15 X-series benchmark instances: small (X-n106–X-n251), medium (X-n317–X-n439), large (X-n641–X-n957). Gap = (Solution − Optimal) / Optimal × 100%. Time in seconds. Lower gap is better. † Results from cited papers.</p>
+        </div>
+        <div class="bench-table-wrap">
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Scale</th><th rowspan="2">Instance</th>
+                <th colspan="2">PyVRP</th>
+                <th colspan="2">POMO†</th>
+                <th colspan="2">LEHD†</th>
+                <th colspan="2">FunSearch</th>
+                <th colspan="2">EoH</th>
+                <th colspan="2">EoH-S</th>
+                <th colspan="2">HeurAgenix†</th>
+                <th colspan="2">ORaI</th>
+              </tr>
+              <tr class="sub-header">
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="5">Small</td><td>X-n106</td><td>1.60</td><td>300.01</td><td>7.23</td><td>0.13</td><td>5.82</td><td>0.18</td><td>30.50</td><td>3.85</td><td>25.20</td><td>3.15</td><td>8.80</td><td>2.50</td><td>21.91</td><td>2.84</td><td class="mace">7.96</td><td class="mace">0.46</td></tr>
+              <tr><td>X-n157</td><td>2.32</td><td>300.05</td><td>7.89</td><td>0.21</td><td>5.47</td><td>0.29</td><td>12.50</td><td>8.10</td><td>10.80</td><td>6.65</td><td>8.68</td><td>5.25</td><td>8.87</td><td>5.97</td><td class="mace">8.47</td><td class="mace">0.97</td></tr>
+              <tr><td>X-n181</td><td>2.17</td><td>300.06</td><td>8.34</td><td>0.26</td><td>6.15</td><td>0.36</td><td>25.80</td><td>10.80</td><td>21.50</td><td>8.85</td><td>10.20</td><td>7.00</td><td>18.03</td><td>7.95</td><td class="mace">7.68</td><td class="mace">1.89</td></tr>
+              <tr><td>X-n219</td><td>0.69</td><td>300.07</td><td>16.47</td><td>2.85</td><td>6.28</td><td>3.92</td><td>22.40</td><td>26.60</td><td>18.90</td><td>21.85</td><td>4.50</td><td>17.25</td><td>15.42</td><td>19.61</td><td class="mace">1.97</td><td class="mace">6.83</td></tr>
+              <tr><td>X-n251</td><td>4.27</td><td>300.08</td><td>17.82</td><td>4.17</td><td>11.63</td><td>5.74</td><td>32.50</td><td>34.30</td><td>27.80</td><td>28.15</td><td>14.50</td><td>22.20</td><td>22.14</td><td>25.26</td><td class="mace">9.29</td><td class="mace">4.24</td></tr>
+              <tr><td rowspan="5">Medium</td><td>X-n317</td><td>1.11</td><td>300.13</td><td>19.56</td><td>7.38</td><td>12.71</td><td>10.15</td><td>14.80</td><td>79.55</td><td>12.50</td><td>65.25</td><td>6.20</td><td>51.50</td><td>9.56</td><td>58.59</td><td class="mace">2.49</td><td class="mace">11.04</td></tr>
+              <tr><td>X-n359</td><td>6.15</td><td>300.19</td><td>20.73</td><td>9.64</td><td>13.38</td><td>13.27</td><td>24.60</td><td>91.35</td><td>20.80</td><td>74.90</td><td>11.50</td><td>59.20</td><td>16.84</td><td>67.25</td><td class="mace">8.26</td><td class="mace">9.47</td></tr>
+              <tr><td>X-n376</td><td>0.73</td><td>300.18</td><td>21.18</td><td>15.83</td><td>13.19</td><td>14.91</td><td>16.50</td><td>130.50</td><td>13.80</td><td>107.05</td><td>4.80</td><td>84.60</td><td>11.24</td><td>96.10</td><td class="mace">1.91</td><td class="mace">25.55</td></tr>
+              <tr><td>X-n401</td><td>5.42</td><td>300.16</td><td>22.41</td><td>18.76</td><td>15.94</td><td>17.57</td><td>22.60</td><td>117.35</td><td>19.20</td><td>96.25</td><td>9.50</td><td>76.00</td><td>15.42</td><td>86.41</td><td class="mace">7.94</td><td class="mace">12.81</td></tr>
+              <tr><td>X-n439</td><td>5.31</td><td>300.24</td><td>24.35</td><td>26.52</td><td>14.67</td><td>22.76</td><td>16.80</td><td>113.75</td><td>14.20</td><td>93.30</td><td>9.50</td><td>73.70</td><td>11.24</td><td>83.84</td><td class="mace">7.38</td><td class="mace">17.41</td></tr>
+              <tr><td rowspan="5">Large</td><td>X-n641</td><td>6.09</td><td>300.44</td><td>38.67</td><td>48.47</td><td>16.83</td><td>52.93</td><td>34.20</td><td>830.10</td><td>29.50</td><td>680.60</td><td>11.50</td><td>537.50</td><td>23.20</td><td>611.26</td><td class="mace">8.19</td><td class="mace">39.89</td></tr>
+              <tr><td>X-n655</td><td>1.16</td><td>300.54</td><td>39.84</td><td>50.25</td><td>17.29</td><td>55.43</td><td>29.50</td><td>343.20</td><td>25.20</td><td>281.40</td><td>6.80</td><td>222.40</td><td>20.12</td><td>252.81</td><td class="mace">2.51</td><td class="mace">108.14</td></tr>
+              <tr><td>X-n701</td><td>8.68</td><td>300.98</td><td>42.19</td><td>67.83</td><td>18.46</td><td>65.87</td><td>23.40</td><td>380.75</td><td>19.80</td><td>312.25</td><td>7.20</td><td>246.70</td><td>15.75</td><td>280.45</td><td class="mace">6.75</td><td class="mace">56.37</td></tr>
+              <tr><td>X-n801</td><td>4.02</td><td>300.79</td><td>45.73</td><td>72.71</td><td>19.75</td><td>86.33</td><td>35.80</td><td>1700.55</td><td>30.60</td><td>1394.70</td><td>8.90</td><td>1101.80</td><td>24.22</td><td>1252.16</td><td class="mace">7.35</td><td class="mace">73.86</td></tr>
+              <tr><td>X-n957</td><td>4.06</td><td>300.93</td><td>52.38</td><td>95.38</td><td>22.91</td><td>131.24</td><td>38.50</td><td>2205.75</td><td>32.80</td><td>1809.15</td><td>10.50</td><td>1429.10</td><td>26.02</td><td>1624.12</td><td class="mace">7.09</td><td class="mace">183.92</td></tr>
+              <tr class="avg-row"><td colspan="2"><strong>Average</strong></td><td><strong>3.59</strong></td><td><strong>300s</strong></td><td><strong>25.65</strong></td><td><strong>28s</strong></td><td><strong>13.37</strong></td><td><strong>32s</strong></td><td><strong>25.36</strong></td><td><strong>405s</strong></td><td><strong>21.51</strong></td><td><strong>332s</strong></td><td><strong>8.87</strong></td><td><strong>262s</strong></td><td><strong>17.33</strong></td><td><strong>298s</strong></td><td class="mace"><strong>6.35</strong></td><td class="mace"><strong>37s</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PSP ── -->
+      <div id="tab-psp" class="bench-tab-panel">
+        <div class="bench-header">
+          <h3 class="bench-title" data-zh="港口调度问题 (PSP) — 零样本新型基准">Port Scheduling Problem (PSP) — Novel Zero-Shot Benchmark</h3>
+          <p class="bench-desc" data-zh="18 个基准算例：小规模（20–100 艘船）、中规模（150–250 艘船）、大规模（300–500 艘船）。差距以各方法中找到的最优解为基准衡量。FunSearch、EoH 和 EoH-S 均未能为该新型问题生成可行算法。">18 benchmark instances: small (20–100 vessels), medium (150–250 vessels), large (300–500 vessels). Gap measured vs. best solution found across all methods. FunSearch, EoH, and EoH-S all failed to produce feasible algorithms for this novel problem.</p>
+        </div>
+        <div class="bench-table-wrap">
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Scale</th><th rowspan="2">Instance</th>
+                <th colspan="3">Gurobi</th>
+                <th colspan="2">GPIH</th>
+                <th colspan="2">HeurAgenix</th>
+                <th colspan="2">ORaI</th>
+              </tr>
+              <tr class="sub-header">
+                <th>10 min</th><th>20 min</th><th>30 min</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+                <th>Gap</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="6">Small</td><td>20_2_3_T12</td><td>0</td><td>0</td><td>0</td><td>21.19</td><td>1s</td><td>8.54</td><td>1s</td><td class="mace">3.41</td><td class="mace">1s</td></tr>
+              <tr><td>40_3_4_T12</td><td>0</td><td>0</td><td>0</td><td>13.83</td><td>1s</td><td>8.97</td><td>1s</td><td class="mace">3.15</td><td class="mace">1s</td></tr>
+              <tr><td>60_5_8_T12</td><td>0</td><td>0</td><td>0</td><td>10.09</td><td>1s</td><td>7.57</td><td>1s</td><td class="mace">3.01</td><td class="mace">1s</td></tr>
+              <tr><td>80_10_15_T48</td><td>5.45</td><td>3.41</td><td>0</td><td>20.95</td><td>1s</td><td>14.56</td><td>1s</td><td class="mace">2.51</td><td class="mace">1s</td></tr>
+              <tr><td>100_15_30_T24</td><td>10.64</td><td>6.59</td><td>0</td><td>21.41</td><td>1s</td><td>9.51</td><td>3s</td><td class="mace">2.84</td><td class="mace">6s</td></tr>
+              <tr><td>100_15_30_T48</td><td>19.04</td><td>19.04</td><td>2.80</td><td>19.45</td><td>1s</td><td>11.25</td><td>5s</td><td class="mace">0</td><td class="mace">7s</td></tr>
+              <tr><td rowspan="6">Medium</td><td>150_20_40_T24</td><td>6.04</td><td>1.36</td><td>2.22</td><td>19.53</td><td>2s</td><td>5.64</td><td>11s</td><td class="mace">0</td><td class="mace">18s</td></tr>
+              <tr><td>150_20_40_T48</td><td>51.21</td><td>10.61</td><td>10.61</td><td>18.54</td><td>3s</td><td>6.31</td><td>25s</td><td class="mace">0</td><td class="mace">53s</td></tr>
+              <tr><td>200_20_40_T24</td><td>25.53</td><td>6.53</td><td>6.53</td><td>23.54</td><td>4s</td><td>8.64</td><td>24s</td><td class="mace">0</td><td class="mace">78s</td></tr>
+              <tr><td>200_20_40_T48</td><td>43.98</td><td>43.98</td><td>8.94</td><td>25.14</td><td>5s</td><td>9.69</td><td>48s</td><td class="mace">0</td><td class="mace">118s</td></tr>
+              <tr><td>250_20_50_T24</td><td>28.26</td><td>8.59</td><td>8.59</td><td>24.53</td><td>4s</td><td>11.35</td><td>52s</td><td class="mace">0</td><td class="mace">202s</td></tr>
+              <tr><td>250_20_50_T48</td><td>70.07</td><td>70.07</td><td>34.64</td><td>18.25</td><td>5s</td><td>15.64</td><td>61s</td><td class="mace">0</td><td class="mace">310s</td></tr>
+              <tr><td rowspan="6">Large</td><td>300_25_60_T24</td><td>63.41</td><td>34.67</td><td>22.08</td><td>17.55</td><td>4s</td><td>21.25</td><td>58s</td><td class="mace">0</td><td class="mace">402s</td></tr>
+              <tr><td>300_25_60_T48</td><td>66.93</td><td>66.93</td><td>66.93</td><td>35.51</td><td>6s</td><td>23.14</td><td>69s</td><td class="mace">0</td><td class="mace">502s</td></tr>
+              <tr><td>400_30_80_T24</td><td>76.20</td><td>76.20</td><td>29.12</td><td>39.15</td><td>7s</td><td>20.12</td><td>68s</td><td class="mace">0</td><td class="mace">690s</td></tr>
+              <tr><td>400_30_80_T48</td><td>70.99</td><td>70.99</td><td>70.99</td><td>45.54</td><td>8s</td><td>19.34</td><td>80s</td><td class="mace">0</td><td class="mace">884s</td></tr>
+              <tr><td>500_40_100_T24</td><td>82.65</td><td>82.65</td><td>82.65</td><td>38.51</td><td>7s</td><td>31.52</td><td>81s</td><td class="mace">0</td><td class="mace">870s</td></tr>
+              <tr><td>500_40_100_T48</td><td>60.87</td><td>60.87</td><td>60.87</td><td>35.64</td><td>9s</td><td>28.59</td><td>93s</td><td class="mace">0</td><td class="mace">987s</td></tr>
+              <tr class="avg-row"><td colspan="2"><strong>Average</strong></td><td><strong>37.85</strong></td><td><strong>31.25</strong></td><td><strong>22.61</strong></td><td><strong>27.31</strong></td><td><strong>4s</strong></td><td><strong>14.54</strong></td><td><strong>38s</strong></td><td class="mace"><strong>0.83</strong></td><td class="mace"><strong>285s</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /benchmark-tabs -->
+
+    <p class="case-footnote fade-in" data-zh="† 结果来自原始论文（HeurAgenix, POMO, LEHD）">
+      † Results taken from original papers (HeurAgenix, POMO, LEHD)
+    </p>
+  </div>
+</section>
+
+<!-- ─── SERVICES ───────────────────────────────────────────────── -->
+<section id="services">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="合作方式">How We Work</span>
+      <h2 class="section-heading" data-zh="量身定制的合作，从概念验证到生产部署">Tailored engagements, from proof-of-concept to production</h2>
+      <p class="section-sub" data-zh="每位客户的挑战各不相同。我们提供三种合作模式，无论您处于探索可行性、规模部署还是构建长期优化能力的阶段，均可灵活匹配。">Every client challenge is different. We offer three engagement models designed to match where you are — whether you are exploring feasibility, deploying at scale, or building a long-term optimization capability.</p>
+    </div>
+
+    <div class="services-grid">
+
+      <!-- Pilot -->
+      <div class="service-card fade-in fade-in-delay-1">
+        <div class="service-timeline">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-zh="2–3 周">2 – 3 weeks</span>
+        </div>
+        <div class="service-name" data-zh="试点评估">Pilot Assessment</div>
+        <div class="service-desc" data-zh="验证您的问题是否适合 AI 驱动的算法设计——在更大投入之前提供可运行的演示。">Validate whether your problem is a strong fit for AI-driven algorithm design — with a working demonstration before any larger commitment.</div>
+        <ul class="service-features">
+          <li data-zh="深度问题界定会议">Deep-dive problem scoping session</li>
+          <li data-zh="状态-动作-工具框架设计">State-action-tool framework design</li>
+          <li data-zh="小规模 ORaI 演示运行">Small-scale ORaI demonstration run</li>
+          <li data-zh="性能基准报告">Performance benchmark report</li>
+          <li data-zh="合作路线图与建议">Engagement roadmap and recommendations</li>
+        </ul>
+        <a href="#contact" class="service-cta outline" data-zh="联系我们">Get in Touch</a>
+      </div>
+
+      <!-- Full Deployment -->
+      <div class="service-card featured fade-in fade-in-delay-2">
+        <div class="service-badge" data-zh="最受欢迎">Most Requested</div>
+        <div class="service-timeline">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-zh="4–8 周">4 – 8 weeks</span>
+        </div>
+        <div class="service-name" data-zh="完整部署">Full Deployment</div>
+        <div class="service-desc" data-zh="端到端的算法设计、优化与交付——从问题建模到可在您环境中运行的生产级算法组合。">End-to-end algorithm design, optimization, and delivery — from problem formulation to a production-ready algorithm portfolio running in your environment.</div>
+        <ul class="service-features">
+          <li data-zh="包含试点评估全部内容">Everything in Pilot Assessment</li>
+          <li data-zh="完整 ORaI 进化设计流程">Full ORaI evolutionary design process</li>
+          <li data-zh="互补算法组合（可执行代码）">Complementary algorithm portfolio (executable code)</li>
+          <li data-zh="与现有系统的集成支持">Integration support for your existing systems</li>
+          <li data-zh="交付后技术支持">Post-delivery technical support</li>
+        </ul>
+        <a href="#contact" class="service-cta filled" data-zh="联系我们">Contact Us</a>
+      </div>
+
+      <!-- Ongoing Partnership -->
+      <div class="service-card fade-in fade-in-delay-3">
+        <div class="service-timeline">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-zh="持续合作">Ongoing</span>
+        </div>
+        <div class="service-name" data-zh="持续合作伙伴">Ongoing Partnership</div>
+        <div class="service-desc" data-zh="为运营挑战持续演进的组织提供长期优化合作——涵盖新问题变体、算法优化与战略咨询。">A continuous optimization partnership for organizations with evolving operational challenges — new problem variants, algorithm refinement, and strategic advisory.</div>
+        <ul class="service-features">
+          <li data-zh="持续算法优化">Continuous algorithm refinement</li>
+          <li data-zh="新问题变体支持">New problem variant support</li>
+          <li data-zh="定期战略复盘会议">Regular strategy review sessions</li>
+          <li data-zh="优先响应与专属接入">Priority response and dedicated access</li>
+          <li data-zh="年度性能审计">Annual performance audit</li>
+        </ul>
+        <a href="#contact" class="service-cta outline" data-zh="立即沟通">Let's Talk</a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── ABOUT ───────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label">About</span>
+    </div>
+    <div class="about-grid">
+      <div class="fade-in">
+        <div class="founder-photo">HG</div>
+        <div class="founder-name">Huatian Gong, PhD</div>
+        <div class="founder-title" data-zh="创始人兼首席科学家，ORaI">Founder &amp; Chief Scientist, ORaI</div>
+        <div class="founder-bio">
+          <p data-zh="南洋理工大学土木与环境工程系研究员。同济大学博士，专注于 AI 驱动优化、深度强化学习及大型语言模型在组合优化中的应用。">Research Fellow at Nanyang Technological University, Department of Civil and Environmental Engineering. PhD from Tongji University with a focus on AI-driven optimization, deep reinforcement learning, and large language models for combinatorial optimization.</p>
+          <p data-zh="在国际顶级期刊发表 9 篇第一作者论文。研究聚焦于可扩展性、实时决策与不确定性下的鲁棒优化——应用于物流、港口运营、制造业与应急响应系统。">Published 9 first-author papers in leading international journals. Research addresses scalability, real-time decision-making, and robust optimization under uncertainty — with applications across logistics, port operations, manufacturing, and emergency response systems.</p>
+        </div>
+        <div class="social-links">
+          <a href="#" class="social-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ────────────────────────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label" data-zh="联系我们">Get In Touch</span>
+      <h2 class="section-heading" data-zh="告诉我们您的优化挑战">Tell us about your optimization challenge</h2>
+      <p class="section-sub" data-zh="通过邮件向我们描述您的业务场景与优化目标，我们通常在 1–2 个工作日内回复。">Email us with a description of your operational context and optimization objectives — we typically respond within 1–2 business days.</p>
+    </div>
+
+    <div class="contact-card fade-in fade-in-delay-1">
+      <div class="contact-card-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div class="contact-card-email">huatian.gong@ntu.edu.sg</div>
+      <p class="contact-card-hint" data-zh="在邮件中简要描述您的运营场景、目标与约束——我们会尽快安排一次初步通话。">In your email, briefly describe your operational scenario, objectives, and constraints — we will arrange an introductory call as soon as possible.</p>
+      <a href="mailto:huatian.gong@ntu.edu.sg" class="btn-primary contact-card-cta" data-zh="发送邮件 →">Send an Email →</a>
+      <div class="contact-card-meta">
+        <span data-zh="📍 新加坡">📍 Singapore</span>
+        <span data-zh="通常在 1–2 个工作日内回复">Typically responds within 1–2 business days</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy" data-zh="© 2025 ORaI. 保留所有权利。">© 2025 ORaI. All rights reserved.</span>
+    <span class="footer-center">Singapore · huatian.gong@ntu.edu.sg</span>
+    <div class="footer-socials">
+      <a href="#" class="footer-social" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── BACK TO TOP ────────────────────────────────────────────── -->
+<button id="back-to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- ─── JAVASCRIPT ─────────────────────────────────────────────── -->
+<script>
+  // ── Navbar scroll ──────────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  const backToTop = document.getElementById('back-to-top');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+
+    if (window.scrollY > 500) backToTop.classList.add('visible');
+    else backToTop.classList.remove('visible');
+  });
+
+  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ── Hamburger menu ─────────────────────────────────────────────
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+
+  function closeMobile() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  }
+
+  // ── Intersection Observer fade-in ──────────────────────────────
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  fadeEls.forEach(el => observer.observe(el));
+
+  // ── Benchmark tabs ─────────────────────────────────────────────
+  const TAB_KEYS = ['jssp', 'tsp', 'cvrp', 'psp'];
+  function switchTab(tab) {
+    document.querySelectorAll('.bench-tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', TAB_KEYS[i] === tab);
+    });
+    document.querySelectorAll('.bench-tab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === 'tab-' + tab);
+    });
+    document.querySelectorAll('.bench-summary-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.tab === tab);
+    });
+  }
+
+  // ── Hero canvas — animated node graph ─────────────────────────
+  (function () {
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, nodes, animId;
+
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+
+    function randomNode() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 2.5 + 1.2
+      };
+    }
+
+    function init() {
+      resize();
+      const count = Math.floor((W * H) / 22000);
+      nodes = Array.from({ length: Math.max(18, Math.min(count, 55)) }, randomNode);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // edges
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = 160;
+          if (dist < maxDist) {
+            const alpha = (1 - dist / maxDist) * 0.55;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(96, 165, 250, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // nodes
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(96, 165, 250, 0.85)';
+        ctx.fill();
+      });
+    }
+
+    function update() {
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > W) n.vx *= -1;
+        if (n.y < 0 || n.y > H) n.vy *= -1;
+      });
+    }
+
+    function loop() {
+      update();
+      draw();
+      animId = requestAnimationFrame(loop);
+    }
+
+    init();
+    loop();
+
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(animId);
+      init();
+      loop();
+    });
+  })();
+
+  // ── Language switcher ────────────────────────────────────────
+  let currentLang = 'zh';
+
+  function applyLang(lang) {
+    // Plain text elements
+    document.querySelectorAll('[data-zh]').forEach(el => {
+      if (!el.dataset.en) el.dataset.en = el.textContent.trim();
+      el.textContent = lang === 'zh' ? el.dataset.zh : el.dataset.en;
+    });
+    // HTML elements (contain child tags)
+    document.querySelectorAll('[data-zh-html]').forEach(el => {
+      if (!el.dataset.enHtml) el.dataset.enHtml = el.innerHTML;
+      el.innerHTML = lang === 'zh' ? el.dataset.zhHtml : el.dataset.enHtml;
+    });
+    // Placeholders
+    document.querySelectorAll('[data-zh-placeholder]').forEach(el => {
+      if (!el.dataset.enPlaceholder) el.dataset.enPlaceholder = el.placeholder;
+      el.placeholder = lang === 'zh' ? el.dataset.zhPlaceholder : el.dataset.enPlaceholder;
+    });
+    // Toggle button label
+    document.getElementById('lang-toggle').textContent = lang === 'zh' ? 'EN' : '中';
+    document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+  }
+
+  function toggleLang() {
+    currentLang = currentLang === 'zh' ? 'en' : 'zh';
+    applyLang(currentLang);
+  }
+
+  // Apply Chinese on load
+  applyLang('zh');
+</script>
+</body>
+</html>
