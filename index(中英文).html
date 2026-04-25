@@ -1236,6 +1236,23 @@
     #back-to-top svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ─── LANG TOGGLE ─────────────────────────────────────── */
+    #lang-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.85);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+    #lang-toggle:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.45);
+    }
 
     /* ─── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 768px) {
@@ -1307,7 +1324,8 @@
     <li><a href="#contact" data-zh="联系我们">Contact</a></li>
   </ul>
 
-<a class="nav-cta" href="#contact" data-zh="预约咨询">Book a Consultation</a>
+  <button id="lang-toggle" onclick="toggleLang()">EN</button>
+  <a class="nav-cta" href="#contact" data-zh="预约咨询">Book a Consultation</a>
 
   <button class="hamburger" id="hamburger" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -2191,6 +2209,37 @@
     });
   })();
 
+  // ── Language switcher ────────────────────────────────────────
+  let currentLang = 'zh';
+
+  function applyLang(lang) {
+    // Plain text elements
+    document.querySelectorAll('[data-zh]').forEach(el => {
+      if (!el.dataset.en) el.dataset.en = el.textContent.trim();
+      el.textContent = lang === 'zh' ? el.dataset.zh : el.dataset.en;
+    });
+    // HTML elements (contain child tags)
+    document.querySelectorAll('[data-zh-html]').forEach(el => {
+      if (!el.dataset.enHtml) el.dataset.enHtml = el.innerHTML;
+      el.innerHTML = lang === 'zh' ? el.dataset.zhHtml : el.dataset.enHtml;
+    });
+    // Placeholders
+    document.querySelectorAll('[data-zh-placeholder]').forEach(el => {
+      if (!el.dataset.enPlaceholder) el.dataset.enPlaceholder = el.placeholder;
+      el.placeholder = lang === 'zh' ? el.dataset.zhPlaceholder : el.dataset.enPlaceholder;
+    });
+    // Toggle button label
+    document.getElementById('lang-toggle').textContent = lang === 'zh' ? 'EN' : '中';
+    document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+  }
+
+  function toggleLang() {
+    currentLang = currentLang === 'zh' ? 'en' : 'zh';
+    applyLang(currentLang);
+  }
+
+  // Apply Chinese on load
+  applyLang('zh');
 </script>
 </body>
 </html>
